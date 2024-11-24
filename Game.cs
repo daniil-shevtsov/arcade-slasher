@@ -22,6 +22,14 @@ public partial class Game : Node2D, Unit
 	{
 		player.Velocity = currentVelocity;
 		player.MoveAndSlide();
+
+		GD.Print($"{(targetPosition - player.GlobalPosition).Length()}");
+		if ((targetPosition - player.GlobalPosition).Length() <= 3f)
+		{
+			currentVelocity = Vector2.Zero;
+		}
+
+		// currentVelocity -= Vector2.One * (targetPosition - player.GlobalPosition) * 100f / (targetPosition - player.GlobalPosition).Length();
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
