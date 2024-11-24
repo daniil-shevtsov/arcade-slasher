@@ -6,7 +6,7 @@ public partial class Game : Node2D, Unit
 {
 
 	private Vector2 targetPosition = Vector2.Zero;
-
+	private Vector2 currentVelocity = Vector2.Zero;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -20,23 +20,8 @@ public partial class Game : Node2D, Unit
 
 	public override void _PhysicsProcess(double delta)
 	{
-		float distance = (targetPosition - player.GlobalPosition).Length();
-		Vector2 direction = (targetPosition - player.GlobalPosition).Normalized();
-
-		GD.Print($"{distance} {direction}");
-		if (Mathf.IsZeroApprox(distance))
-		{
-			GD.Print($"_PhysicsProcess set {player.GlobalPosition} instead of current {targetPosition}");
-			targetPosition = player.GlobalPosition;
-		}
-		else
-		{
-			var velocity = direction * (distance / (float)delta);
-			GD.Print($"_PhysicsProcess set velocity {velocity}");
-
-			player.Velocity = velocity;
-			player.MoveAndSlide();
-		}
+		player.Velocity = currentVelocity;
+		player.MoveAndSlide();
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -48,6 +33,10 @@ public partial class Game : Node2D, Unit
 			var mousePosition = GetGlobalMousePosition();
 			targetPosition = mousePosition;
 			GD.Print($"Set target position: {targetPosition}");
+			float distance = (targetPosition - player.GlobalPosition).Length();
+			Vector2 direction = (targetPosition - player.GlobalPosition).Normalized();
+			currentVelocity = direction * Player.Speed;
+
 
 			// velocity = mousePosition - player.GlobalPosition;
 			// velocity = new Vector2(
