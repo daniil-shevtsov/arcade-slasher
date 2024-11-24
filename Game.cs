@@ -20,21 +20,19 @@ public partial class Game : Node2D, Unit
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (targetPosition != player.GlobalPosition)
+		float distance = (targetPosition - player.GlobalPosition).Length();
+		Vector2 direction = (targetPosition - player.GlobalPosition).Normalized();
+
+		GD.Print($"{distance} {direction}");
+		if (Mathf.IsZeroApprox(distance))
 		{
-			Vector2 velocity = player.Velocity;
-			Vector2 direction = (targetPosition - player.GlobalPosition).Normalized();
-			if (direction != Vector2.Zero)
-			{
-				velocity = direction * Player.Speed;
-			}
-			else
-			{
-				velocity = new Vector2(
-					Mathf.MoveToward(player.Velocity.X, 0, Player.Speed),
-					Mathf.MoveToward(player.Velocity.Y, 0, Player.Speed)
-				);
-			}
+			GD.Print($"_PhysicsProcess set {player.GlobalPosition} instead of current {targetPosition}");
+			targetPosition = player.GlobalPosition;
+		}
+		else
+		{
+			var velocity = direction * (distance / (float)delta);
+			GD.Print($"_PhysicsProcess set velocity {velocity}");
 
 			player.Velocity = velocity;
 			player.MoveAndSlide();
@@ -49,6 +47,8 @@ public partial class Game : Node2D, Unit
 			var velocity = Vector2.Zero;
 			var mousePosition = GetGlobalMousePosition();
 			targetPosition = mousePosition;
+			GD.Print($"Set target position: {targetPosition}");
+
 			// velocity = mousePosition - player.GlobalPosition;
 			// velocity = new Vector2(
 			// 		Mathf.MoveToward(player.Velocity.X, velocity.X, Player.Speed),
